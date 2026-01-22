@@ -4,18 +4,18 @@
     "Animals": [
       {
         "id": "tiger-word",
-        "mode": "letter",               // "letter" or "word"
-        "target": "TIGER",              // the word/sentence to build
-        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", // optional for letter mode
-        "distractors": "QWXYZ",         // optional extra letters to add noise
-        "speed": 1.0,                   // baseline drop speed multiplier
-        "spawnRate": 1200               // ms between spawns at baseline
+        "mode": "letter",               
+        "target": "TIGER",              
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 
+        "distractors": "QWXYZ",         
+        "speed": 1.0,                   
+        "spawnRate": 1200               
       },
       {
         "id": "farm-sentence",
         "mode": "word",
-        "targetWords": ["THE", "COW", "SAYS", "MOO"],  // exact order to catch
-        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"], // pool
+        "targetWords": ["THE", "COW", "SAYS", "MOO"],  
+        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"], 
         "speed": 1.0,
         "spawnRate": 1400
       }
