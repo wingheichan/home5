@@ -1,0 +1,69 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Catch — Wing Hei Chan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="js/util.js"></script>   <!-- AppUtil.Timer, SFX, showPreview -->
+  <script defer src="js/catch.js"></script>  <!-- new game script -->
+</head>
+<body>
+  <nav class="sidebar" aria-label="Primary">
+    <!-- your existing sidebar -->
+  </nav>
+
+  <main class="main">
+    <div class="container">
+      <section class="card">
+        <h1>Catch</h1>
+
+        <div class="controls-row">
+          <label>Category:
+            <select id="catchCat"></select>
+          </label>
+          <label>Subcategory:
+            <select id="catchSub"></select>
+          </label>
+          <label>Mode:
+            <select id="catchMode">
+              <option value="letter">Letter</option>
+              <option value="word">Word</option>
+            </select>
+          </label>
+          <button id="catchPreview" class="btn">Preview</button>
+          <button id="catchStart" class="btn">Start</button>
+        </div>
+
+        <div class="stats-row">
+          <span>Time: <strong id="catchTime">0:00</strong></span>
+          <span>Correct: <strong id="catchCorrect">0</strong></span>
+          <span>Score: <strong id="catchScore">0</strong></span>
+          <span>High: <strong id="catchHigh">0</strong></span>
+        </div>
+
+        <!-- Game field -->
+        <div id="catchStage" class="catch-stage" aria-label="Game area">
+          <!-- falling balloons & player injected here -->
+          <div id="catchPlayer" class="catch-player" aria-label="Player" role="img" aria-roledescription="Boy"></div>
+        </div>
+
+        <!-- Mobile controls -->
+        <div class="controls-row mobile-only">
+          <button id="catchLeft" class="btn">◀</button>
+          <button id="catchRight" class="btn">▶</button>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Highlight current page in sidebar (your pattern)
+    document.querySelectorAll('.sidebar__btn[href$="catch.html"]').forEach(
+      el => el.setAttribute('aria-current', 'page')
+    );
+  </script>
+</body>
+</html>
