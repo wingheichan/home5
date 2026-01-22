@@ -57,6 +57,7 @@
       if (k.startsWith('quiz:'))        group = 'Quiz';
       else if (k.startsWith('memory:')) group = 'Memory';
       else if (k.startsWith('cloze:'))  group = 'Cloze';
+      else if (k.startsWith('catch:')) group = 'Catch';  
       else if (k.startsWith('sudoku:')) group = 'Sudoku';
       else if (k.startsWith('wordsearch:')) group = 'Word Search';
       else continue; // Ignore unrelated/unknown keys
@@ -180,6 +181,9 @@
           // If you see "undefined" here, the game wrote a number instead of an object.
           //stat = `Correct: ${v.right} — Time: ${fmt(v.ms)}`;
           stat = `Score: ${v}`; // v is number , changed to a number
+        } else if (g === 'Catch') {
+          // { score, right, ms }
+          stat = `Score: ${v.score} — Correct: ${v.right} — Time: ${fmt(v.ms)}`;
         } else if (g === 'Sudoku') {
           // Sudoku stores an OBJECT = { ms }
           stat = `Best time: ${fmt(v.ms)}`;
