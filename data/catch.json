@@ -1,0 +1,48 @@
+
+{
+  "English": {
+    "Animals": [
+      {
+        "id": "tiger-word",
+        "mode": "letter",               // "letter" or "word"
+        "target": "TIGER",              // the word/sentence to build
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", // optional for letter mode
+        "distractors": "QWXYZ",         // optional extra letters to add noise
+        "speed": 1.0,                   // baseline drop speed multiplier
+        "spawnRate": 1200               // ms between spawns at baseline
+      },
+      {
+        "id": "farm-sentence",
+        "mode": "word",
+        "targetWords": ["THE", "COW", "SAYS", "MOO"],  // exact order to catch
+        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"], // pool
+        "speed": 1.0,
+        "spawnRate": 1400
+      }
+    ],
+    "Verbs": [
+      {
+        "id": "run-jump",
+        "mode": "word",
+        "targetWords": ["I","CAN","RUN","AND","JUMP"],
+        "wordBank": ["I","CAN","RUN","AND","JUMP","SWIM","FLY"],
+        "speed": 1.1,
+        "spawnRate": 1200
+      }
+    ]
+  },
+  "Spanish": {
+    "Saludos": [
+      {
+        "id": "hola",
+        "mode": "letter",
+        "target": "HOLA",
+        "alphabet": "AÁBCDEÉFGHIÍJKLMNÑOÓPQRSTUÚÜVWXYZ",
+        "distractors": "QWXYZ",
+        "speed": 1.0,
+        "spawnRate": 1200
+      }
+    ]
+  }
+}
+``
