@@ -328,3 +328,55 @@ select {
 }
 
 
+/* Game field: fixed height, relative positioning for absolute children */
+.catch-stage {
+  position: relative;
+  height: 420px;
+  background: var(--surface-elev-1, #1113);
+  border: 1px solid var(--border, #555);
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Player sprite at bottom center initially */
+.catch-player {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  width: 56px;
+  height: 72px;
+  transform: translateX(-50%);
+  background: url('img/boy.png') no-repeat center / contain; /* or a placeholder color */
+}
+
+/* Balloon appearance */
+.catch-balloon {
+  position: absolute;
+  top: -60px; /* start slightly above the stage */
+  width: 56px;
+  height: 72px;
+  background: url('img/balloon.png') no-repeat center / contain; /* or styled circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  font-weight: 700;
+  text-shadow: 0 1px 0 #fff8;
+  user-select: none;
+  pointer-events: none; /* falling objects shouldn't capture clicks */
+}
+
+/* Token text inside balloon; tweak fallback if image isn't used */
+.catch-balloon .token {
+  background: rgba(255,255,255,0.7);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+/* Mobile only helper */
+@media (min-width: 700px) {
+  .mobile-only { display: none; }
+}
+
+
