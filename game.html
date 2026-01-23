@@ -114,8 +114,8 @@
       <div class="controls">
         <label>Mode
           <select id="catchMode">
-            <option value="Letters">Falling letters</option>
-            <option value="Words">Falling words</option>
+            <option value="letter">Letter</option>
+            <option value="word">Word</option>
           </select>
         </label>
 
@@ -124,6 +124,12 @@
         <button id="catchPreview" class="btn">Preview</button>
         <button id="catchStart" class="btn btn-primary">Start</button>
       </div>
+       
+      <!-- Game field (stage) and player sprite -->
+        <div id="catchStage" class="catch-stage" tabindex="0" aria-label="Game area">
+          <div id="catchPlayer" class="catch-player" aria-label="Player" role="img" aria-roledescription="Boy"></div>
+        </div>
+
       <div id="catchWrap"></div>
     </section>
   </div>
