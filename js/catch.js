@@ -46,10 +46,11 @@
   // Base falling speed (px/s) multiplied by per-item "speed"
   const BASE_FALL_SPEED = 80;
 
-  // Tunables (add near your constants)
-  const H_LANE_FACTOR   = 0.5;  // 0..1 of player width (smaller = stricter horizontal) Reduce to 0.5 or 0.4 to force better alignment.
-  const V_CATCH_WINDOW  = 10;   // px window above the player's head where a catch is valid. Reduce to 8–10 px for a tighter timing window.
-  
+  // --- Collision tuning (lower = stricter) ---
+  //Start with 10 px inset; if it’s still too generous, try 14–16 px. If it becomes too hard, reduce to 6–8 px
+  const PLAYER_HIT_INSET  = 10; // px trimmed on all sides of the boy
+  const BALLOON_HIT_INSET = 10; // px trimmed on all sides of the balloon
+
   // ===== State =====
   let running = false;
   let rafId   = 0;
@@ -254,26 +255,21 @@ function renderProgress() {
     });
   }
 
-  
-
 function collides(b) {
-  // Horizontal center alignment
-  const playerCenter = playerX + PLAYER_W / 2;
-  const balloonCenter = b.x + BALLOON_W / 2;
-  const halfLane = (PLAYER_W * H_LANE_FACTOR) / 2;
+  // Player shrunken hitbox
+  const pLeft   = playerX + PLAYER_HIT_INSET;
+  const pRight  = playerX + PLAYER_W - PLAYER_HIT_INSET;
+  const pTop    = (stage.clientHeight - PLAYER_H) + PLAYER_HIT_INSET;
+  const pBottom = (stage.clientHeight - PLAYER_H) + PLAYER_H - PLAYER_HIT_INSET;
 
-  const horizontalAligned =
-    balloonCenter >= (playerCenter - halfLane) &&
-    balloonCenter <= (playerCenter + halfLane);
+  // Balloon shrunken hitbox
+  const bLeft   = b.x + BALLOON_HIT_INSET;
+  const bRight  = b.x + BALLOON_W - BALLOON_HIT_INSET;
+  const bTop    = b.y + BALLOON_HIT_INSET;
+  const bBottom = b.y + BALLOON_H - BALLOON_HIT_INSET;
 
-  // Vertical window: balloon bottom lies within a small band above player top
-  const playerTop = stage.clientHeight - PLAYER_H;
-  const balloonBottom = b.y + BALLOON_H;
-  const verticalAligned =
-    (balloonBottom >= playerTop - V_CATCH_WINDOW) &&
-    (balloonBottom <= playerTop + 2); // allow tiny overlap
-
-  return horizontalAligned && verticalAligned;
+  // Overlap?
+  return (pLeft < bRight && pRight > bLeft && pTop < bBottom && pBottom > bTop);
 }
 
   // ===== Scoring =====
