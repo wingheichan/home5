@@ -48,8 +48,8 @@
 
   // --- Collision tuning (lower = stricter) ---
   //Start with 10 px inset; if it’s still too generous, try 14–16 px. If it becomes too hard, reduce to 6–8 px
-  const PLAYER_HIT_INSET  = 10; // px trimmed on all sides of the boy
-  const BALLOON_HIT_INSET = 10; // px trimmed on all sides of the balloon
+  const PLAYER_HIT_INSET  = 14; // px trimmed on all sides of the boy
+  const BALLOON_HIT_INSET = 14; // px trimmed on all sides of the balloon
 
   // ===== State =====
   let running = false;
