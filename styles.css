@@ -346,7 +346,7 @@ select {
   width: 56px;
   height: 72px;
   transform: translateX(-50%);
-  background: url('img/boy.png') no-repeat center / contain; /* or a placeholder color */
+  background: url('img/boy2.png') no-repeat center / contain; /* or a placeholder color */
 }
 
 /* Balloon appearance */
