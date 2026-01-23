@@ -46,6 +46,10 @@
   // Base falling speed (px/s) multiplied by per-item "speed"
   const BASE_FALL_SPEED = 80;
 
+  // Tunables (add near your constants)
+  const H_LANE_FACTOR   = 0.5;  // 0..1 of player width (smaller = stricter horizontal) Reduce to 0.5 or 0.4 to force better alignment.
+  const V_CATCH_WINDOW  = 10;   // px window above the player's head where a catch is valid. Reduce to 8–10 px for a tighter timing window.
+  
   // ===== State =====
   let running = false;
   let rafId   = 0;
@@ -250,22 +254,27 @@ function renderProgress() {
     });
   }
 
-  // ===== Collision (AABB) =====
-  function collides(b) {
-    const px = playerX;
-    const py = stage.clientHeight - PLAYER_H; // bottom position
-    const bx = b.x;
-    const by = b.y;
-    const bw = BALLOON_W;
-    const bh = BALLOON_H;
+  
 
-    return (
-      px < bx + bw &&
-      px + PLAYER_W > bx &&
-      py < by + bh &&
-      py + PLAYER_H > by
-    );
-  }
+function collides(b) {
+  // Horizontal center alignment
+  const playerCenter = playerX + PLAYER_W / 2;
+  const balloonCenter = b.x + BALLOON_W / 2;
+  const halfLane = (PLAYER_W * H_LANE_FACTOR) / 2;
+
+  const horizontalAligned =
+    balloonCenter >= (playerCenter - halfLane) &&
+    balloonCenter <= (playerCenter + halfLane);
+
+  // Vertical window: balloon bottom lies within a small band above player top
+  const playerTop = stage.clientHeight - PLAYER_H;
+  const balloonBottom = b.y + BALLOON_H;
+  const verticalAligned =
+    (balloonBottom >= playerTop - V_CATCH_WINDOW) &&
+    (balloonBottom <= playerTop + 2); // allow tiny overlap
+
+  return horizontalAligned && verticalAligned;
+}
 
   // ===== Scoring =====
   function award(correctCatch) {
