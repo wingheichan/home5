@@ -324,6 +324,25 @@
   }
   document.addEventListener('keydown', onKey);
 
+const btnLeft  = document.getElementById('catchLeft');
+const btnRight = document.getElementById('catchRight');
+
+if (btnLeft) {
+  btnLeft.addEventListener('click', () => {
+    const rect = stage.getBoundingClientRect();
+    playerX = Math.max(0, playerX - 24);
+    player.style.left = `${playerX}px`;
+  });
+}
+
+if (btnRight) {
+  btnRight.addEventListener('click', () => {
+    const rect = stage.getBoundingClientRect();
+    playerX = Math.min(rect.width - playerSize.w, playerX + 24);
+    player.style.left = `${playerX}px`;
+  });
+}
+
   // Mobile buttons
   $('#catchLeft').addEventListener('click', () => {
     const rect = stage.getBoundingClientRect();
