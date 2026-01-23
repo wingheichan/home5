@@ -69,3 +69,28 @@ If your art is circular, compute overlap using centers and radii:
     const r = PLAYER_RADIUS + BALLOON_RADIUS;
     return distSq <= r*r;
   }
+
+Scoring:
+  Base points per correct catch: 50
+  Combo bonus: +10 per streak step, capped at +50
+  
+  1st correct in streak: 50 (+0)
+  2nd: 60 (+10)
+  3rd: 70 (+20)
+  … up to a maximum of 100 for a long streak
+  
+  
+  Wrong catch: −10 and combo reset to 0
+  Correct counter (correct) increments only on correct catches.
+  On finish, we:
+  
+  stop the timer, compute totalMs
+  update highscore if score > previous
+  write a leaderboard entry { score, right: correct, ms: totalMs }
+
+
+const BASE_POINTS       = 40; // default 50
+const COMBO_STEP        = 8;  // default 10
+const COMBO_MAX_BONUS   = 40; // default 50 (so max per catch is BASE_POINTS + COMBO_MAX_BONUS)
+const WRONG_PENALTY     = 15; // default 10
+const pts = BASE_POINTS + Math.min(COMBO_MAX_BONUS, COMBO_STEP * (combo - 1));
