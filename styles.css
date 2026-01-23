@@ -374,6 +374,14 @@ select {
   font-size: 18px;
 }
 
+/* Limit stage width on larger screens */
+@media (min-width: 900px) {
+  .catch-stage {
+    max-width: 560px;      /* try 560px, 600px, etc. */
+    margin-inline: auto;   /* center horizontally */
+  }
+}
+
 /* Mobile only helper */
 @media (min-width: 700px) {
   .mobile-only { display: none; }
