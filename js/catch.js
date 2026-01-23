@@ -11,41 +11,63 @@
   const $$ = (s, r = document) => Array.from((r || document).querySelectorAll(s));
 
   // ===== UI elements =====
-  const selCat = $('#catchCat');
-  const selSub = $('#catchSub');
-  const selMode = $('#catchMode');
-  const stage  = $('#catchStage');
-  const player = $('#catchPlayer');
+  const selCat   = $('#catchCat');
+  const selSub   = $('#catchSub');
+  const selMode  = $('#catchMode');
+  const stage    = $('#catchStage');
+  const player   = $('#catchPlayer');
 
-  const tOut = $('#catchTime');
-  const cOut = $('#catchCorrect');
-  const sOut = $('#catchScore');
-  const hOut = $('#catchHigh');
+  const tOut     = $('#catchTime');
+  const cOut     = $('#catchCorrect');
+  const sOut     = $('#catchScore');
+  const hOut     = $('#catchHigh');
+  const targetEl = $('#catchTarget'); // shows progress pills (HTML you added)
 
   const timer = new Timer(tOut);
 
+  // ======= Tunables (easy size & speed edits) =======
+  // Balloon visual size (px)
+  const BALLOON_W = 56;
+  const BALLOON_H = 72;
+
+  // Player (boy) visual size (px)
+  const PLAYER_W = 56;
+  const PLAYER_H = 72;
+
+  // Token font size inside balloons (px)
+  const TOKEN_FONT_PX = 18;
+
+  // Keyboard move speed (px per keydown step)
+  const KEY_MOVE_PX = 6;
+
+  // Mobile button move speed (px per tap)
+  const TAP_MOVE_PX = 24;
+
+  // Base falling speed (px/s) multiplied by per-item "speed"
+  const BASE_FALL_SPEED = 80;
+
   // ===== State =====
   let running = false;
-  let rafId = 0;
-  let balloons = [];     // active falling objects
-  let score = 0;
-  let correct = 0;
-  let combo = 0;
+  let rafId   = 0;
+
+  let balloons   = [];  // active falling objects
+  let spawnPool  = [];  // cached pool for spawns based on chosen item
+  let score      = 0;
+  let correct    = 0;
+  let combo      = 0;
 
   // Player state
-  const playerSize = { w: 56, h: 72 };
-  let playerX = 0;       // left position (px)
-  const speedPx = 6;     // how many pixels we move per tick for keyboard
+  let playerX = 0;
 
   // Target sequence state
   let targetTokens = []; // array of strings (letters OR words) to collect
-  let nextIndex = 0;     // index in targetTokens we need to catch next
+  let nextIndex    = 0;  // index in targetTokens we need to catch next
 
   // Spawn controls
-  let spawnTimer = 0;
+  let spawnTimer    = 0;
   let spawnInterval = 1200; // ms
-  let fallSpeed = 80;       // px per second base; scaled by item speed
-  let lastTs = 0;
+  let fallSpeed     = BASE_FALL_SPEED;
+  let lastTs        = 0;
 
   // ===== Helpers: select fill =====
   function fill(sel, items) {
@@ -53,14 +75,9 @@
     items.forEach(v => sel.append(new Option(v, v)));
   }
 
-  // ===== Highscore and leaderboard keys =====
-  // Keep highscore numeric separate from leaderboard entry object.
-  function hsKey() {
-    return `highscore:catch:${selCat.value}:${selSub.value}:${selMode.value}`;
-  }
-  function lbKey() {
-    return `catch:${selCat.value}:${selSub.value}:${selMode.value}`;
-  }
+  // ===== Highscore / Leaderboard keys =====
+  function hsKey() { return `highscore:catch:${selCat.value}:${selSub.value}:${selMode.value}`; }
+  function lbKey() { return `catch:${selCat.value}:${selSub.value}:${selMode.value}`; }
 
   function loadHigh() {
     const raw = localStorage.getItem(hsKey());
@@ -73,69 +90,123 @@
   function updateSub() {
     fill(selSub, Object.keys(DATA[selCat.value] || {}));
     loadHigh();
+    updateModeOptions(); // optional helper to disable unavailable modes
   }
-  selCat.addEventListener('change', updateSub);
-  selSub.addEventListener('change', loadHigh);
-  selMode.addEventListener('change', loadHigh);
+  selCat?.addEventListener('change', updateSub);
+  selSub?.addEventListener('change', loadHigh);
+  selMode?.addEventListener('change', loadHigh);
   updateSub();
 
-  // ===== Choose an item (target) and configure speed/spawn from JSON =====
+  // ===== Optional: disable modes that don't exist for current Cat/Sub =====
+  function updateModeOptions() {
+    if (!selMode) return;
+    const list = ((DATA[selCat.value] || {})[selSub.value] || []);
+    const hasLetter = list.some(x => x.mode === 'letter');
+    const hasWord   = list.some(x => x.mode === 'word');
+
+    [...selMode.options].forEach(opt => {
+      if (opt.value === 'letter') opt.disabled = !hasLetter;
+      if (opt.value === 'word')   opt.disabled = !hasWord;
+    });
+
+    // If currently selected mode is disabled, switch to a valid one if any
+    const curr = selMode.value;
+    if ((curr === 'letter' && !hasLetter) || (curr === 'word' && !hasWord)) {
+      selMode.value = hasLetter ? 'letter' : (hasWord ? 'word' : curr);
+    }
+  }
+
+  // ===== Build tokens for display =====
+  function buildTokensForDisplay(item) {
+    if (!item) return [];
+    if (item.mode === 'letter') {
+      return (item.target || '').split('');
+    }
+    return (item.targetWords || []).slice();
+  }
+
+  // ===== Render progress pills =====
+  function renderProgress() {
+    if (!targetEl) return;
+    if (!targetTokens || !targetTokens.length) {
+      targetEl.textContent = '';
+      return;
+    }
+    const html = targetTokens.map((tok, i) => {
+      const cls =
+        i < nextIndex ? 'caught' :
+        i === nextIndex ? 'next' : 'pending';
+      const safe = String(tok)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;');
+      return `<span class="target-token ${cls}">${safe}</span>`;
+    }).join('');
+    targetEl.innerHTML = html;
+  }
+
+  // ===== Choose an item and configure speeds/pool =====
   function pickItem() {
     const list = ((DATA[selCat.value] || {})[selSub.value] || []);
     if (!list.length) return null;
 
-    // Pick the first item matching mode, else fallback
-    const mode = selMode.value;
+    const mode = selMode?.value || 'letter';
     const item = list.find(x => x.mode === mode) || list[0];
 
-    // Prepare the sequence we must catch, and the pool to spawn from.
+    // Prepare spawn pool and target tokens
     let pool = [];
     if (item.mode === 'letter') {
-      const alphabet = item.alphabet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const distractor = item.distractors || '';
+      const alphabet   = item.alphabet   || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const distractor = item.distractors|| '';
       pool = (alphabet + distractor).split('');
-      targetTokens = item.target.split(''); // e.g., "TIGER" → ["T","I","G","E","R"]
+      targetTokens = (item.target || '').split('');
     } else {
-      pool = (item.wordBank && item.wordBank.length)
-        ? item.wordBank.slice()
-        : (item.targetWords || []).slice();
+      pool         = (item.wordBank && item.wordBank.length) ? item.wordBank.slice()
+                   : (item.targetWords || []).slice();
       targetTokens = (item.targetWords || []).slice();
     }
 
-    fallSpeed = 80 * (item.speed || 1);
+    fallSpeed     = BASE_FALL_SPEED * (item.speed || 1);
     spawnInterval = item.spawnRate || 1200;
 
-    return { mode: item.mode, pool };
+    return { mode: item.mode, pool, item };
   }
 
   // ===== Start game =====
   function start() {
     const chosen = pickItem();
-    stage.focus?.();
 
     // Reset state
-    balloons = [];
-    score = 0;
-    correct = 0;
-    combo = 0;
-    nextIndex = 0;
+    balloons     = [];
+    score        = 0;
+    correct      = 0;
+    combo        = 0;
+    nextIndex    = 0;
     cOut.textContent = '0';
     sOut.textContent = '0';
-    spawnTimer = 0;
-    lastTs = performance.now();
+    spawnTimer   = 0;
+    lastTs       = performance.now();
 
     if (!chosen || !targetTokens.length) {
       stage.innerHTML = '<p class="center small">No items for this selection.</p>';
       return;
     }
 
-    // Position player to stage center
-    const rect = stage.getBoundingClientRect();
-    playerX = (rect.width - playerSize.w) / 2;
-    player.style.left = `${playerX}px`;
+    // Cache pool once (saves work during tick)
+    spawnPool = chosen.pool || [];
 
-    // Clear leftover balloons from stage
+    // Prepare player position at stage center
+    const rect = stage.getBoundingClientRect();
+    playerX = (rect.width - PLAYER_W) / 2;
+    player.style.left = `${playerX}px`;
+    player.style.width = `${PLAYER_W}px`;
+    player.style.height = `${PLAYER_H}px`;
+
+    // Clear leftover balloons
     $$('.catch-balloon', stage).forEach(el => el.remove());
+
+    // Update token progress UI
+    renderProgress();
 
     // Start timer and loop
     timer.reset();
@@ -147,16 +218,18 @@
     rafId = requestAnimationFrame(tick);
   }
 
-  // ===== Spawn a balloon with a random token from pool =====
+  // ===== Spawn a balloon =====
   function spawnBalloon(token) {
     const el = document.createElement('div');
     el.className = 'catch-balloon';
-    el.innerHTML = `<div class="token">${token}</div>`;
+    el.innerHTML = `<div class="token" style="font-size:${TOKEN_FONT_PX}px">${token}</div>`;
 
     const rect = stage.getBoundingClientRect();
-    const x = Math.random() * (rect.width - 56);  // 56px balloon width
+    const x = Math.random() * (rect.width - BALLOON_W);
     el.style.left = `${x}px`;
-    el.style.top  = `-72px`; // start above
+    el.style.top  = `${-BALLOON_H}px`;
+    el.style.width  = `${BALLOON_W}px`;
+    el.style.height = `${BALLOON_H}px`;
 
     stage.appendChild(el);
 
@@ -164,40 +237,39 @@
       el,
       token,
       x,
-      y: -72,
+      y: -BALLOON_H,
       vy: fallSpeed // px/s baseline; dt applied per frame
     });
   }
 
-  // ===== Detect AABB collision between balloon and player =====
-  function collides(balloon) {
+  // ===== Collision (AABB) =====
+  function collides(b) {
     const px = playerX;
-    const py = stage.clientHeight - playerSize.h; // bottom position
-    const bx = balloon.x;
-    const by = balloon.y;
-    const bw = 56, bh = 72;
+    const py = stage.clientHeight - PLAYER_H; // bottom position
+    const bx = b.x;
+    const by = b.y;
+    const bw = BALLOON_W;
+    const bh = BALLOON_H;
 
-    const intersect =
+    return (
       px < bx + bw &&
-      px + playerSize.w > bx &&
+      px + PLAYER_W > bx &&
       py < by + bh &&
-      py + playerSize.h > by;
-
-    return intersect;
+      py + PLAYER_H > by
+    );
   }
 
-  // ===== Scoring model =====
+  // ===== Scoring =====
   function award(correctCatch) {
     if (correctCatch) {
       combo += 1;
-      // 50 base + time/consistency bonus via combo
-      const pts = 50 + Math.min(50, 10 * (combo - 1));
+      const pts = 50 + Math.min(50, 10 * (combo - 1)); // base + combo
       score += pts;
       correct += 1;
       cOut.textContent = String(correct);
       SFX.correct();
     } else {
-      combo = 0; // reset combo on mistake
+      combo = 0;
       score = Math.max(0, score - 10);
       SFX.wrong();
     }
@@ -208,7 +280,7 @@
   function tick(ts) {
     if (!running) return;
 
-    const dt = Math.min(40, ts - lastTs); // clamp delta to avoid big jumps
+    const dt = Math.min(40, ts - lastTs); // clamp delta
     lastTs = ts;
 
     // Spawn balloons
@@ -216,41 +288,35 @@
     if (spawnTimer >= spawnInterval) {
       spawnTimer = 0;
 
-      // Decide which token to spawn:
-      // - Prefer the NEXT required token with some probability
-      // - Otherwise distractors from pool
       const need = targetTokens[nextIndex];
-      const preferNeed = Math.random() < 0.5; // 50% chance to drop the needed
-      const { pool } = pickItem() || { pool: [] };
+      const preferNeed = Math.random() < 0.6; // slightly favor the needed token
 
       const token = (preferNeed && need)
         ? need
-        : (pool.length ? pool[Math.floor(Math.random() * pool.length)] : need || '?');
+        : (spawnPool.length ? spawnPool[Math.floor(Math.random() * spawnPool.length)] : (need || '?'));
 
       spawnBalloon(token);
     }
 
-    // Move balloons (falling)
+    // Move balloons
     balloons.forEach(b => {
       b.y += (b.vy * dt / 1000);
-      b.el.style.top = `${b.y}px`;
+      b.el.style.top  = `${b.y}px`;
       b.el.style.left = `${b.x}px`;
     });
 
-    // Check collisions & out-of-bounds
+    // Collisions & cleanup
     const h = stage.clientHeight;
     balloons = balloons.filter(b => {
-      // If collided with player:
       if (collides(b)) {
         const nextNeeded = targetTokens[nextIndex];
-        const isCorrect = (String(b.token).toUpperCase() === String(nextNeeded).toUpperCase());
+        const isCorrect  = (String(b.token).toUpperCase() === String(nextNeeded).toUpperCase());
         award(isCorrect);
         b.el.remove();
 
-        // Progress to next target token if correct
         if (isCorrect) {
           nextIndex++;
-          // If we completed the target, end the game
+          renderProgress();
           if (nextIndex >= targetTokens.length) {
             finish();
             return false;
@@ -259,38 +325,32 @@
         return false;
       }
 
-      // Remove if fallen below stage
-      if (b.y > h + 10) {
-        b.el.remove();
-        return false;
-      }
+      if (b.y > h + 10) { b.el.remove(); return false; }
       return true;
     });
 
     rafId = requestAnimationFrame(tick);
   }
 
-  // ===== Finish round =====
+  // ===== Finish =====
   function finish() {
     running = false;
     cancelAnimationFrame(rafId);
     timer.stop();
 
     const totalMs = timer.elapsedMs();
-    // Update Highscore (max)
     const prev = +(localStorage.getItem(hsKey()) || 0);
     const best = Math.max(prev, score);
     localStorage.setItem(hsKey(), String(best));
     hOut.textContent = String(best);
 
-    // Write leaderboard entry object for your leaderboard.js
+    // Leaderboard record
     localStorage.setItem(lbKey(), JSON.stringify({
       score,
       right: correct,
       ms: totalMs
     }));
 
-    // Simple overlay UI
     const totalTime = Timer.format(totalMs);
     const overlay = document.createElement('div');
     overlay.className = 'next-row';
@@ -300,78 +360,74 @@
       <button id="catchAgain" class="btn">Play again</button>
     `;
     stage.appendChild(overlay);
-    $('#catchAgain').addEventListener('click', () => {
-      overlay.remove();
-      start();
-    });
+
+    const againBtn = $('#catchAgain');
+    if (againBtn) {
+      againBtn.addEventListener('click', () => {
+        overlay.remove();
+        start();
+      });
+    }
 
     SFX.success();
   }
 
-  // ===== Input: keyboard & mobile buttons =====
+  // ===== Input: keyboard =====
   function onKey(e) {
     if (!running) return;
     const rect = stage.getBoundingClientRect();
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-      playerX = Math.max(0, playerX - speedPx);
+      playerX = Math.max(0, playerX - KEY_MOVE_PX);
       player.style.left = `${playerX}px`;
       e.preventDefault();
     } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-      playerX = Math.min(rect.width - playerSize.w, playerX + speedPx);
+      playerX = Math.min(rect.width - PLAYER_W, playerX + KEY_MOVE_PX);
       player.style.left = `${playerX}px`;
       e.preventDefault();
     }
   }
   document.addEventListener('keydown', onKey);
 
-const btnLeft  = document.getElementById('catchLeft');
-const btnRight = document.getElementById('catchRight');
+  // ===== Input: mobile buttons (null-safe) =====
+  const btnLeft  = document.getElementById('catchLeft');
+  const btnRight = document.getElementById('catchRight');
 
-if (btnLeft) {
-  btnLeft.addEventListener('click', () => {
-    const rect = stage.getBoundingClientRect();
-    playerX = Math.max(0, playerX - 24);
-    player.style.left = `${playerX}px`;
-  });
-}
+  if (btnLeft) {
+    btnLeft.addEventListener('click', () => {
+      const rect = stage.getBoundingClientRect();
+      playerX = Math.max(0, playerX - TAP_MOVE_PX);
+      player.style.left = `${playerX}px`;
+    });
+  }
+  if (btnRight) {
+    btnRight.addEventListener('click', () => {
+      const rect = stage.getBoundingClientRect();
+      playerX = Math.min(rect.width - PLAYER_W, playerX + TAP_MOVE_PX);
+      player.style.left = `${playerX}px`;
+    });
+  }
 
-if (btnRight) {
-  btnRight.addEventListener('click', () => {
-    const rect = stage.getBoundingClientRect();
-    playerX = Math.min(rect.width - playerSize.w, playerX + 24);
-    player.style.left = `${playerX}px`;
-  });
-}
+  // ===== Preview =====
+  const previewBtn = $('#catchPreview');
+  if (previewBtn) {
+    previewBtn.addEventListener('click', () => {
+      const list = ((DATA[selCat.value] || {})[selSub.value] || []);
+      if (!list.length) {
+        showPreview('Catch Preview', '<p>No items.</p>');
+        return;
+      }
+      const mode = selMode?.value || 'letter';
+      const html = list
+        .filter(it => it.mode === mode)
+        .map((it, i) => {
+          const seq = (mode === 'letter') ? it.target : (it.targetWords || []).join(' ');
+          return `<p>${i + 1}. ${seq}</p>`;
+        }).join('');
+      showPreview(`Catch Preview — ${selCat.value} / ${selSub.value} (${mode})`, html || '<p>No matching items.</p>');
+    });
+  }
 
-  // Mobile buttons
-//  $('#catchLeft').addEventListener('click', () => {
-  //  const rect = stage.getBoundingClientRect();
-   // playerX = Math.max(0, playerX - 24);
-    //player.style.left = `${playerX}px`;
-  //});
-  //$('#catchRight').addEventListener('click', () => {
-    //const rect = stage.getBoundingClientRect();
-    //playerX = Math.min(rect.width - playerSize.w, playerX + 24);
-    //player.style.left = `${playerX}px`;
-  //});
-
-  // ===== Preview (optional) =====
-  $('#catchPreview').addEventListener('click', () => {
-    const list = ((DATA[selCat.value] || {})[selSub.value] || []);
-    if (!list.length) {
-      showPreview('Catch Preview', '<p>No items.</p>');
-      return;
-    }
-    const mode = selMode.value;
-    const html = list
-      .filter(it => it.mode === mode)
-      .map((it, i) => {
-        const seq = (mode === 'letter') ? it.target : (it.targetWords || []).join(' ');
-        return `<p>${i + 1}. ${seq}</p>`;
-      }).join('');
-    showPreview(`Catch Preview — ${selCat.value} / ${selSub.value} (${mode})`, html || '<p>No matching items.</p>');
-  });
-
-  // ===== Start button =====
-  $('#catchStart').addEventListener('click', start);
+  // ===== Start =====
+  const startBtn = $('#catchStart');
+  startBtn?.addEventListener('click', start);
 })();
