@@ -27,15 +27,15 @@
 
   // ======= Tunables (easy size & speed edits) =======
   // Balloon visual size (px)
-  const BALLOON_W = 56;
-  const BALLOON_H = 72;
+  const BALLOON_W = 44;
+  const BALLOON_H = 56;
 
   // Player (boy) visual size (px)
-  const PLAYER_W = 56;
-  const PLAYER_H = 72;
+  const PLAYER_W = 44;
+  const PLAYER_H = 62;
 
   // Token font size inside balloons (px)
-  const TOKEN_FONT_PX = 18;
+  const TOKEN_FONT_PX = 14;
 
   // Keyboard move speed (px per keydown step)
   const KEY_MOVE_PX = 6;
