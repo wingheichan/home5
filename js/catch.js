@@ -344,16 +344,16 @@ if (btnRight) {
 }
 
   // Mobile buttons
-  $('#catchLeft').addEventListener('click', () => {
-    const rect = stage.getBoundingClientRect();
-    playerX = Math.max(0, playerX - 24);
-    player.style.left = `${playerX}px`;
-  });
-  $('#catchRight').addEventListener('click', () => {
-    const rect = stage.getBoundingClientRect();
-    playerX = Math.min(rect.width - playerSize.w, playerX + 24);
-    player.style.left = `${playerX}px`;
-  });
+//  $('#catchLeft').addEventListener('click', () => {
+  //  const rect = stage.getBoundingClientRect();
+   // playerX = Math.max(0, playerX - 24);
+    //player.style.left = `${playerX}px`;
+  //});
+  //$('#catchRight').addEventListener('click', () => {
+    //const rect = stage.getBoundingClientRect();
+    //playerX = Math.min(rect.width - playerSize.w, playerX + 24);
+    //player.style.left = `${playerX}px`;
+  //});
 
   // ===== Preview (optional) =====
   $('#catchPreview').addEventListener('click', () => {
