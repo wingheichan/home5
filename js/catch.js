@@ -125,25 +125,33 @@
     return (item.targetWords || []).slice();
   }
 
-  // ===== Render progress pills =====
-  function renderProgress() {
-    if (!targetEl) return;
-    if (!targetTokens || !targetTokens.length) {
-      targetEl.textContent = '';
-      return;
-    }
-    const html = targetTokens.map((tok, i) => {
-      const cls =
-        i < nextIndex ? 'caught' :
-        i === nextIndex ? 'next' : 'pending';
-      const safe = String(tok)
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;');
-      return `<span class="target-token ${cls}">${safe}</span>`;
-    }).join('');
-    targetEl.innerHTML = html;
+  
+// Renders ONLY the caught tokens into #catchTarget.
+// Nothing about "next" or "pending" is shown.
+function renderProgress() {
+  const cont = document.getElementById('catchTarget');
+  if (!cont) return;
+
+  // Nothing caught yet
+  if (!targetTokens || nextIndex <= 0) {
+    cont.textContent = '';
+    return;
   }
+
+  // Build array of caught tokens (indexes 0..nextIndex-1)
+  const caught = targetTokens.slice(0, nextIndex);
+
+  // Escape HTML-sensitive chars and join with a space for readability
+  const html = caught.map(tok => {
+    const safe = String(tok)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+    return `<span class="target-token caught">${safe}</span>`;
+  }).join(' ');
+
+  cont.innerHTML = html;
+}
 
   // ===== Choose an item and configure speeds/pool =====
   function pickItem() {
@@ -333,44 +341,32 @@
   }
 
   // ===== Finish =====
-  function finish() {
-    running = false;
-    cancelAnimationFrame(rafId);
-    timer.stop();
+  
+function finish() {
+  running = false;
+  cancelAnimationFrame(rafId);
+  timer.stop();
 
-    const totalMs = timer.elapsedMs();
-    const prev = +(localStorage.getItem(hsKey()) || 0);
-    const best = Math.max(prev, score);
-    localStorage.setItem(hsKey(), String(best));
-    hOut.textContent = String(best);
+  const totalMs = timer.elapsedMs();
 
-    // Leaderboard record
-    localStorage.setItem(lbKey(), JSON.stringify({
-      score,
-      right: correct,
-      ms: totalMs
-    }));
+  // (Optional) keep highscores/leaderboard saving;
+  // remove these lines too if you don't want any saving at finish.
+  const prev = +(localStorage.getItem(hsKey()) || 0);
+  const best = Math.max(prev, score);
+  localStorage.setItem(hsKey(), String(best));
+  hOut.textContent = String(best);
 
-    const totalTime = Timer.format(totalMs);
-    const overlay = document.createElement('div');
-    overlay.className = 'next-row';
-    overlay.innerHTML = `
-      <p>Done! Collected: ${correct}/${targetTokens.length}
-         — Time: ${totalTime} — Score: ${score}</p>
-      <button id="catchAgain" class="btn">Play again</button>
-    `;
-    stage.appendChild(overlay);
+  localStorage.setItem(lbKey(), JSON.stringify({
+    score,
+    right: correct,
+    ms: totalMs
+  }));
 
-    const againBtn = $('#catchAgain');
-    if (againBtn) {
-      againBtn.addEventListener('click', () => {
-        overlay.remove();
-        start();
-      });
-    }
+  // ❌ No overlay, no “Done!” message.
+  // If you want to auto-restart or show a subtle toast, we can add that later.
+  SFX.success();
+}
 
-    SFX.success();
-  }
 
   // ===== Input: keyboard =====
   function onKey(e) {
