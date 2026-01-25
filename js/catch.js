@@ -55,6 +55,10 @@
   let running = false;
   let rafId   = 0;
 
+  // Multi-round state (for mode "letter-rounds")
+  let rounds = [];           // array of { hint, target }
+  let roundIndex = 0;        // current round (0..rounds.length-1)
+
   let balloons   = [];  // active falling objects
   let spawnPool  = [];  // cached pool for spawns based on chosen item
   let score      = 0;
@@ -74,6 +78,8 @@
   let fallSpeed     = BASE_FALL_SPEED;
   let lastTs        = 0;
 
+const hintEl = document.getElementById('catchHint');
+  
   // ===== Helpers: select fill =====
   function fill(sel, items) {
     sel.innerHTML = '';
@@ -168,6 +174,26 @@ function renderProgress() {
 
     // Prepare spawn pool and target tokens
     let pool = [];
+    
+    if (item.mode === 'letter-rounds') {
+        // Multi-word letter mode
+        const alphabet   = item.alphabet   || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const distractor = item.distractors|| '';
+        spawnPool = (alphabet + distractor).split('');
+    
+        rounds = (item.rounds || []).slice(0, 10);       // cap at 10 rounds
+        roundIndex = 0;
+    
+        // Prepare first round's target tokens
+        if (!rounds.length) return null;
+        targetTokens = (rounds[0].target || '').split('');
+        // speeds
+        fallSpeed     = BASE_FALL_SPEED * (item.speed || 1);
+        spawnInterval = item.spawnRate || 1200;
+    
+        return { mode: item.mode, pool: spawnPool, item };
+      }
+
     if (item.mode === 'letter') {
       const alphabet   = item.alphabet   || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const distractor = item.distractors|| '';
@@ -185,6 +211,29 @@ function renderProgress() {
     return { mode: item.mode, pool, item };
   }
 
+
+function startRound() {
+  // Set hint text
+  if (hintEl) {
+    const hint = (rounds[roundIndex] && rounds[roundIndex].hint) || '';
+    hintEl.textContent = hint;
+  }
+  // Set tokens for this round
+  targetTokens = (rounds[roundIndex].target || '').split('');
+  nextIndex = 0;
+  renderProgress(); // shows only caught so far
+}
+
+function nextRoundOrFinish() {
+  roundIndex++;
+  if (roundIndex >= rounds.length) {
+    finish();
+  } else {
+    startRound();
+  }
+}
+
+  
   // ===== Start game =====
   function start() {
     const chosen = pickItem();
@@ -200,14 +249,28 @@ function renderProgress() {
     spawnTimer   = 0;
     lastTs       = performance.now();
 
-    if (!chosen || !targetTokens.length) {
-      stage.innerHTML = '<p class="center small">No items for this selection.</p>';
-      return;
-    }
+    
+    if (!chosen || (!targetTokens.length && chosen.mode !== 'letter-rounds')) {
+        stage.innerHTML = '<p class="center small">No items for this selection.</p>';
+        return;
+      }
 
     // Cache pool once (saves work during tick)
     spawnPool = chosen.pool || [];
 
+
+   // If multi-round, ensure hint and first round configured
+   if (chosen.mode === 'letter-rounds') {
+     // Clear any previous balloons
+     $$('.catch-balloon', stage).forEach(el => el.remove());
+     startRound(); // sets hint, targetTokens, nextIndex, renderProgress()
+   } else {
+     // single target (letter or word); no hint in this mode
+     if (hintEl) hintEl.textContent = '';
+     renderProgress();
+   }
+
+    
     // Prepare player position at stage center
     const rect = stage.getBoundingClientRect();
     playerX = (rect.width - PLAYER_W) / 2;
@@ -330,10 +393,16 @@ function collides(b) {
         if (isCorrect) {
           nextIndex++;
           renderProgress();
-          if (nextIndex >= targetTokens.length) {
-            finish();
-            return false;
-          }
+          
+       if (nextIndex >= targetTokens.length) {
+         // Round completed in "letter-rounds" → move to next round
+         if (rounds.length && roundIndex < rounds.length) {
+           nextRoundOrFinish();
+         } else {
+           finish();
+         }
+         return false;
+       }
         }
         return false;
       }
