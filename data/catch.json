@@ -1,33 +1,25 @@
-
 {
   "English": {
     "Animals": [
       {
-        "id": "tiger-word",
-        "mode": "letter",               
-        "target": "TIGER",              
-        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 
-        "distractors": "QWXYZ",         
-        "speed": 1.0,                   
-        "spawnRate": 1200               
-      },
-      {
-        "id": "farm-sentence",
-        "mode": "word",
-        "targetWords": ["THE", "COW", "SAYS", "MOO"],  
-        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"], 
+        "id": "animals-letter-rounds",
+        "mode": "letter-rounds",
+        "rounds": [
+          { "hint": "A big cat with stripes", "target": "TIGER" },
+          { "hint": "A large gray animal",    "target": "ELEPHANT" },
+          { "hint": "King of the jungle",     "target": "LION" },
+          { "hint": "A slow reptile",         "target": "TURTLE" },
+          { "hint": "A black-and-white bird", "target": "PENGUIN" },
+          { "hint": "Has a long neck",        "target": "GIRAFFE" },
+          { "hint": "Loves honey",            "target": "BEAR" },
+          { "hint": "Best friend",            "target": "DOG" },
+          { "hint": "Says ‘meow’",            "target": "CAT" },
+          { "hint": "Lives in the ocean",     "target": "DOLPHIN" }
+        ],
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "distractors": "QWXYZ",
         "speed": 1.0,
-        "spawnRate": 1400
-      }
-    ],
-    "Verbs": [
-      {
-        "id": "run-jump",
-        "mode": "word",
-        "targetWords": ["I","CAN","RUN","AND","JUMP"],
-        "wordBank": ["I","CAN","RUN","AND","JUMP","SWIM","FLY"],
-        "speed": 1.1,
-        "spawnRate": 1200
+        "spawnRate": 1100
       }
     ]
   },
