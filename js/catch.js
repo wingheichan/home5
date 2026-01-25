@@ -218,17 +218,21 @@ function renderProgress() {
   }
 
 
+
+const roundEl = document.getElementById('catchRound');
 function startRound() {
-  // Set hint text
   if (hintEl) {
     const hint = (rounds[roundIndex] && rounds[roundIndex].hint) || '';
     hintEl.textContent = hint;
   }
-  // Set tokens for this round
+  if (roundEl) {
+    roundEl.textContent = `(${roundIndex + 1} / ${rounds.length})`;
+  }
   targetTokens = (rounds[roundIndex].target || '').split('');
   nextIndex = 0;
-  renderProgress(); // shows only caught so far
+  renderProgress();
 }
+
 
 function nextRoundOrFinish() {
   roundIndex++;
