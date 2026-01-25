@@ -78,7 +78,13 @@
   let fallSpeed     = BASE_FALL_SPEED;
   let lastTs        = 0;
 
-const hintEl = document.getElementById('catchHint');
+  const hintEl = document.getElementById('catchHint');
+  
+  const need = targetTokens[nextIndex];
+  const preferNeed = Math.random() < 0.6; // adjust difficulty
+  const token = (preferNeed && need) ? need
+    : (spawnPool.length ? spawnPool[Math.floor(Math.random() * spawnPool.length)]
+    : (need || '?'));
   
   // ===== Helpers: select fill =====
   function fill(sel, items) {
