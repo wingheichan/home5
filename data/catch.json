@@ -29,7 +29,6 @@
         "targetWords": ["I","CAN","RUN","AND","JUMP"],
         "wordBank": ["I","CAN","RUN","AND","JUMP","SWIM","FLY"],
         "speed": 1.1,
-        "spawnRate": 1200
         "spawnRate": 1100
       }
     ]
