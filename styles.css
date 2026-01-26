@@ -424,7 +424,7 @@ select {
   
   opacity: 0.9;
   
-  background: url('img/alien.jpg') no-repeat center;
+  background: url('img/alien2.png') no-repeat center;
   background-size: contain;   /* ✅ keeps aspect ratio */
 
   display: flex;
