@@ -331,7 +331,7 @@ select {
 /* Global size knobs for the Catch stage */
 :root {
   /* Pick the exact size you like on mobile and keep it everywhere */
-  --catch-stage-width: 95vw;   /* e.g., almost full screen width on phones */
+  --catch-stage-width: 420px;   /* e.g., almost full screen width on phones */
   --catch-stage-max:   560px;  /* and cap it, so it doesn't get huge on desktop */
   --catch-stage-height: 420px; /* keep your current height or adjust */
 }
