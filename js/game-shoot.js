@@ -114,11 +114,11 @@
     if (!list.length) return null;
     mode = selMode?.value || 'letter-rounds';
     const item = list.find(x => x.mode === mode) || list[0];
-
-    rowSize     = item.rowSize || 8;
-    rowStep     = item.rowStep || 36;
-    bulletSpeed = item.bulletSpeed || 460;
-    fallSpeed   = item.speed || 1;
+    
+    rowSize     = Number(item.rowSize)     || 10; // 8..10 recommended
+    rowStep     = Number(item.rowStep)     || 36;
+    bulletSpeed = Number(item.bulletSpeed) || 460;
+    fallSpeed   = Number(item.speed)       || 1;
 
     if (mode === 'letter-rounds') {
       rounds = (item.rounds || []).slice(0, 10);
@@ -171,7 +171,7 @@
     const shipW = 48;
     const gap = (totalWidth - shipW * rowSize) / (rowSize - 1);
 
-    for (let i = 0; i < tokens.length; i++) {
+   for (let i = 0; i < Math.min(tokens.length, cols); i++) {
       const el = document.createElement('div');
       el.className = 'shoot-ship';
       el.style.width  = `${SHIP_W}px`;
