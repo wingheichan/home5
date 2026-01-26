@@ -163,32 +163,33 @@
 
     // Build group sections
     wrap.innerHTML = groups.map(g => {
-      const rows = data[g].map(r => {
-        // Turn the storage key into a friendly "Cat › Sub › (Mode)" label.
-        const label = r.key.split(':').slice(1).join(' › ');
-        const v = r.value;
-
-        // Normalize old numeric entries to an object
-        let v = r.value;
-        if (typeof v === 'number') {
-          v = { score: v };
-        }
-        
-        // Build unified "Score — Correct — Time" line
-        const parts = [];
-        if (typeof v.score === 'number') parts.push(`Score: ${v.score}`);
-        if (typeof v.right === 'number') parts.push(`Correct: ${v.right}`);
-        if (typeof v.ms === 'number')    parts.push(`Time: ${fmt(v.ms)}`);
-        
-        const stat = parts.join(' — ') || '—';
-                
-        // Emit a <tr> for this row
-        return `
-          <tr>
-            <td>${label}</td>
-            <td>${stat}</td>
-          </tr>`;
-      }).join('');
+      
+    const rows = data[g].map(r => {
+      // Label: Category › Subcategory › (Mode)
+      const label = r.key.split(':').slice(1).join(' › ');
+    
+      // Normalize value
+      let v = r.value;
+      if (typeof v === 'number') {
+        v = { score: v };
+      }
+    
+      // Build unified "Score — Correct — Time"
+      const parts = [];
+      if (typeof v.score === 'number') parts.push(`Score: ${v.score}`);
+      if (typeof v.right === 'number') parts.push(`Correct: ${v.right}`);
+      if (typeof v.ms === 'number')    parts.push(`Time: ${fmt(v.ms)}`);
+    
+      const stat = parts.join(' — ') || '—';
+    
+      // ✅ Proper table row
+      return `
+        <tr>
+          <td>${label}</td>
+          <td>${stat}</td>
+        </tr>
+      `;
+    }).join('');
 
       // Emit the group header + table
       return `
