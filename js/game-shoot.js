@@ -167,28 +167,32 @@
     // place across stage width
     const rect = stage.getBoundingClientRect();
         
-    const totalWidth = 540;
-    const shipW = 48;
-    const gap = (totalWidth - shipW * rowSize) / (rowSize - 1);
+    const totalWidth = rect.width;         // ← avoid the hard-coded 540
+    const shipW = SHIP_W;
+    const cols = Math.min(rowSize, tokens.length);  // ← define cols
+    const gap = cols > 1 ? (totalWidth - shipW * cols) / (cols - 1) : 0;
 
-   for (let i = 0; i < Math.min(tokens.length, cols); i++) {
+   for (let i = 0; i < cols; i++) {
       const el = document.createElement('div');
       el.className = 'shoot-ship';
       el.style.width  = `${SHIP_W}px`;
       el.style.height = `${SHIP_H}px`;
       
-el.innerHTML = `
-  <div class="token ${mode === 'word' ? 'word' : ''}">
-    ${tokens[i]}
-  </div>
-`;
+      el.innerHTML = `
+        <div class="token ${mode === 'word' ? 'word' : ''}">
+          ${tokens[i]}
+        </div>
+      `;
 
-      stage.appendChild(el);
-      const x = Math.round(i * gap);
+     
+    // Position ships evenly across the row:
+      const x = Math.round(i * (shipW + gap));  // ← use ship width + gap
       const y = rowY;
       el.style.left = `${x}px`;
-      el.style.top  = `${y}px`;
+      el.style.top = `${y}px`;
+    
       ships.push({ el, x, y, token: tokens[i] });
+
     }
   }
 
