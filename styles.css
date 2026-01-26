@@ -423,7 +423,9 @@ select {
 
   width: 48px;
   height: 48px;
-
+  
+  opacity: 0.9;
+  
   background: url('img/ship.png') no-repeat center;
   background-size: contain;   /* ✅ keeps aspect ratio */
 
