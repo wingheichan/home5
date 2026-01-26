@@ -7,17 +7,21 @@
   const selCat=$('#clozeCat'), selSub=$('#clozeSub'), wrap=$('#clozeWrap'); const tOut=$('#clozeTime'), corrOut=$('#clozeCorrect'), sOut=$('#clozeScore'), hOut=$('#clozeHigh'); const timer=new Timer(tOut);
   function fill(sel, items){ sel.innerHTML=''; items.forEach(v=> sel.append(new Option(v,v))); }
   
-function bestKey() {
-  // Use the same prefix the leaderboard recognizes
-  return `cloze:${selCat.value}:${selSub.value}`;
-}
+
+  function hsKey() {
+    return `highscore:cloze:${selCat.value}:${selSub.value}`;
+  }
+  function lbKey() {
+    return `cloze:${selCat.value}:${selSub.value}`;
+  }
+
 
 function loadHigh() {
-  // Safe parse with numeric fallback
-  const raw = localStorage.getItem(bestKey());
+  const raw = localStorage.getItem(hsKey());
   const v = raw ? JSON.parse(raw) : 0;
   hOut.textContent = String(v);
 }
+  
 fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(DATA[selCat.value]||{})); loadHigh(); } selCat.addEventListener('change', updateSub); selSub.addEventListener('change', loadHigh); updateSub();
   let items=[], idx=0, correct=0;
   function start(){
@@ -60,15 +64,23 @@ function end(){
   document.getElementById('clozeAgain').addEventListener('click', start);
   SFX.success();
 
-  const key = bestKey();
-const prev = JSON.parse(localStorage.getItem(key) || '0');
-if (totalScore > prev) {
-  localStorage.setItem(key, JSON.stringify(totalScore));
-}
-hOut.textContent = String(Math.max(totalScore, prev));
-
-}
-``
+  
+  // Highscore (number)
+  {
+    const prev = +(localStorage.getItem(hsKey()) || 0);
+    const best = Math.max(prev, totalScore);
+    localStorage.setItem(hsKey(), String(best));
+    hOut.textContent = String(best);
+  }
+  // Leaderboard entry (object)
+  localStorage.setItem(lbKey(), JSON.stringify({
+    score: totalScore,
+    right: correct,   // number of correct fills
+    ms: totalMs
+  }));
+  
+  }
+  ``
 
   
 function render(){
