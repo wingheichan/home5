@@ -179,7 +179,7 @@
       
 el.innerHTML = `
   <div class="token ${mode === 'word' ? 'word' : ''}">
-    ${token}
+    ${token[i]}
   </div>
 `;
 
