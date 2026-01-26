@@ -71,6 +71,7 @@
   // Target sequence state
   let targetTokens = []; // array of strings (letters OR words) to collect
   let nextIndex    = 0;  // index in targetTokens we need to catch next
+  let wordsDone    = 0;   // completed words (for letter-rounds)
 
   // Spawn controls
   let spawnTimer    = 0;
@@ -258,7 +259,7 @@ function nextRoundOrFinish() {
     sOut.textContent = '0';
     spawnTimer   = 0;
     lastTs       = performance.now();
-
+    wordsDone = 0;  // reset per run
     
     if (!chosen || (!targetTokens.length && chosen.mode !== 'letter-rounds')) {
         stage.innerHTML = '<p class="center small">No items for this selection.</p>';
@@ -405,7 +406,12 @@ function collides(b) {
           renderProgress();
           
        if (nextIndex >= targetTokens.length) {
-         // Round completed in "letter-rounds" → move to next round
+        
+         // Round completed
+         if (selMode?.value === 'letter-rounds') {
+           wordsDone++; // count a completed word
+         }
+
          if (rounds.length && roundIndex < rounds.length) {
            nextRoundOrFinish();
          } else {
@@ -440,10 +446,16 @@ function finish() {
   localStorage.setItem(hsKey(), String(best));
   hOut.textContent = String(best);
 
-  localStorage.setItem(lbKey(), JSON.stringify({
-    score,
-    right: correct,
-    ms: totalMs
+  
+  const correctForLB =
+     (selMode?.value === 'letter-rounds') ? wordsDone
+     : correct; // 'word' mode counts words; 'letter' mode counts letters
+  
+   localStorage.setItem(lbKey(), JSON.stringify({
+     score,
+     right: correctForLB,
+     ms: totalMs
+
   }));
 
   // ❌ No overlay, no “Done!” message.
