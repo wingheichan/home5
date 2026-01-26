@@ -167,31 +167,20 @@
         const label = r.key.split(':').slice(1).join(' › ');
         const v = r.value;
 
-        // Compose the status cell per group.
-        let stat = '';
-        if (g === 'Quiz') {
-          // Quiz stores a NUMBER = best score
-          stat = `Score: ${v}`; // v is number
-        } else if (g === 'Memory') {
-          // Memory stores an OBJECT = { ms, moves }
-          //stat = `Best time: ${fmt(v.ms)} — Moves: ${v.moves}`;
-          stat = `Score: ${v}`; // v is number , changed to a number
-        } else if (g === 'Cloze') {
-          // Cloze stores an OBJECT = { right, ms }
-          // If you see "undefined" here, the game wrote a number instead of an object.
-          //stat = `Correct: ${v.right} — Time: ${fmt(v.ms)}`;
-          stat = `Score: ${v}`; // v is number , changed to a number
-        } else if (g === 'Catch') {
-          // { score, right, ms }
-          stat = `Score: ${v.score} — Correct: ${v.right} — Time: ${fmt(v.ms)}`;
-        } else if (g === 'Sudoku') {
-          // Sudoku stores an OBJECT = { ms }
-          stat = `Best time: ${fmt(v.ms)}`;
-        } else if (g === 'Word Search') {
-          // Word Search stores an OBJECT = { ms }
-          stat = `Best time: ${fmt(v.ms)}`;
+        // Normalize old numeric entries to an object
+        let v = r.value;
+        if (typeof v === 'number') {
+          v = { score: v };
         }
-
+        
+        // Build unified "Score — Correct — Time" line
+        const parts = [];
+        if (typeof v.score === 'number') parts.push(`Score: ${v.score}`);
+        if (typeof v.right === 'number') parts.push(`Correct: ${v.right}`);
+        if (typeof v.ms === 'number')    parts.push(`Time: ${fmt(v.ms)}`);
+        
+        const stat = parts.join(' — ') || '—';
+                
         // Emit a <tr> for this row
         return `
           <tr>
