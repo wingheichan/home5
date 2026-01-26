@@ -27,8 +27,8 @@
   const timer = new Timer(tOut);
 
   // ---- Tunables (sizes/speeds)
-  const PLAYER_W = 56, PLAYER_H = 72;
-  const SHIP_W   = 56, SHIP_H   = 48;
+  const PLAYER_W = 48, PLAYER_H = 64;
+  const SHIP_W   = 48, SHIP_H   = 48;
   const TOKEN_FONT = 16;
   const PLAYER_STEP_KEY = 8;     // px per left/right key press
   const PLAYER_STEP_TAP = 28;    // px per mobile tap
@@ -166,7 +166,11 @@
 
     // place across stage width
     const rect = stage.getBoundingClientRect();
-    const gap = (rect.width - SHIP_W) / Math.max(1, (rowSize - 1));
+        
+    const totalWidth = 540;
+    const shipW = 48;
+    const gap = (totalWidth - shipW * rowSize) / (rowSize - 1);
+
     for (let i = 0; i < tokens.length; i++) {
       const el = document.createElement('div');
       el.className = 'shoot-ship';
