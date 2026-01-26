@@ -20,8 +20,8 @@
         "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         "distractors": "QWXYZ",
         "speed": 1.0,
-        "rowSize": 10,          // 8–10 ships per wave
-        "rowStep": 38,          // pixels to step down on miss/wrong
+        "rowSize": 10,          
+        "rowStep": 38,          
         "bulletSpeed": 460
       },
       {
