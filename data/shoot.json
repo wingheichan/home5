@@ -1,0 +1,39 @@
+
+{
+  "English": {
+    "Animals": [
+      {
+        "id": "animals-letter-rounds",
+        "mode": "letter-rounds",
+        "rounds": [
+          { "hint": "Big cat with stripes", "target": "TIGER" },
+          { "hint": "Large gray mammal",   "target": "ELEPHANT" },
+          { "hint": "King of jungle",      "target": "LION" },
+          { "hint": "Slow reptile",        "target": "TURTLE" },
+          { "hint": "Black‑white bird",    "target": "PENGUIN" },
+          { "hint": "Long neck",           "target": "GIRAFFE" },
+          { "hint": "Loves honey",         "target": "BEAR" },
+          { "hint": "Best friend",         "target": "DOG" },
+          { "hint": "Says meow",           "target": "CAT" },
+          { "hint": "Lives in ocean",      "target": "DOLPHIN" }
+        ],
+        "alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "distractors": "QWXYZ",
+        "speed": 1.0,
+        "rowSize": 10,          // 8–10 ships per wave
+        "rowStep": 38,          // pixels to step down on miss/wrong
+        "bulletSpeed": 460
+      },
+      {
+        "id": "animals-words",
+        "mode": "word",
+        "targetWords": ["THE", "COW", "SAYS", "MOO"],
+        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"],
+        "speed": 1.0,
+        "rowSize": 8,
+        "rowStep": 38,
+        "bulletSpeed": 460
+      }
+    ]
+  }
+}
