@@ -183,7 +183,7 @@
           ${tokens[i]}
         </div>
       `;
-
+      stage.appendChild(el);
      
     // Position ships evenly across the row:
       const x = Math.round(i * (shipW + gap));  // ← use ship width + gap
