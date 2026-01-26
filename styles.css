@@ -404,8 +404,6 @@ select {
 
   background: url('img/ship.png') no-repeat center;
   background-size: contain;
-
-  transform: translateX(-50%);
 }
 
 
