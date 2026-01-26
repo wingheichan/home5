@@ -438,7 +438,7 @@ select {
 .shoot-ship {
   position: absolute;
   width: 56px; height: 48px;          /* JS can override */
-  background: url('img/alien.png') no-repeat center / contain;
+  background: url('img/alien2.png') no-repeat center / contain;
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
