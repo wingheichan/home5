@@ -328,15 +328,27 @@ select {
 }
 
 
-/* Game field: fixed height, relative positioning for absolute children */
+/* Global size knobs for the Catch stage */
+:root {
+  /* Pick the exact size you like on mobile and keep it everywhere */
+  --catch-stage-width: 95vw;   /* e.g., almost full screen width on phones */
+  --catch-stage-max:   560px;  /* and cap it, so it doesn't get huge on desktop */
+  --catch-stage-height: 420px; /* keep your current height or adjust */
+}
+
+
+/* Game field: dimension in root */
 .catch-stage {
   position: relative;
-  height: 420px;
+  width:  min(var(--catch-stage-width), var(--catch-stage-max));
+  height: var(--catch-stage-height);
+  margin-inline: auto;                 /* center on wider screens */
   background: var(--surface-elev-1, #1113);
   border: 1px solid var(--border, #555);
   overflow: hidden;
   border-radius: 8px;
 }
+
 
 /* Player sprite at bottom center initially */
 .catch-player {
