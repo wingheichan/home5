@@ -424,7 +424,7 @@ select {
   left: 50%;
   width: 56px; height: 72px;          /* JS will override if you change constants */
   transform: translateX(-50%);
-  background: url('img/player.jpg') no-repeat center / contain;
+  background: url('img/ship.png') no-repeat center / contain;
 }
 
 .shoot-bullet {
@@ -438,7 +438,7 @@ select {
 .shoot-ship {
   position: absolute;
   width: 56px; height: 48px;          /* JS can override */
-  background: url('img/alien.jpg') no-repeat center / contain;
+  background: url('img/alien.png') no-repeat center / contain;
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
