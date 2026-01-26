@@ -62,18 +62,20 @@
         items.forEach(v => sel.append(new Option(v, v)));
     }
 
-    // Highscore key, using your standardized leaderboard prefix:
-    // quiz:Category:Subcategory
-    // (leaderboard.js will read these keys to show scores)
-    function bestKey() {
-        return `quiz:${selCat.value}:${selSub.value}`;
+    // Highscore (number) → separate key, not the leaderboard key
+    function hsKey() {
+      return `highscore:quiz:${selCat.value}:${selSub.value}`;
+    }
+    // Leaderboard entry (object)
+    function lbKey() {
+      return `quiz:${selCat.value}:${selSub.value}`;
     }
 
     // Load current highscore for selected category/subcategory
     function loadHigh() {
-        const raw = localStorage.getItem(bestKey());
-        const v   = raw ? JSON.parse(raw) : 0;
-        hOut.textContent = String(v);
+      const raw = localStorage.getItem(hsKey());
+      const v = raw ? JSON.parse(raw) : 0;
+      hOut.textContent = String(v);
     }
 
     // Fill categories from DATA keys
@@ -187,17 +189,21 @@
         SFX.success();
 
         // --------- SAVE HIGHSCORE IN LOCALSTORAGE ---------
-        const key = bestKey();
-        const prev = JSON.parse(localStorage.getItem(key) || '0');
-
-        // Keep the maximum score
-        if (totalScore > prev) {
-            localStorage.setItem(key, JSON.stringify(totalScore));
-        }
-
-        // Update High output
-        hOut.textContent = String(Math.max(totalScore, prev));
-    }
+        
+      // Highscore (number) → hsKey()
+      {
+        const prev = +(localStorage.getItem(hsKey()) || 0);
+        const best = Math.max(prev, totalScore);
+        localStorage.setItem(hsKey(), String(best));
+        hOut.textContent = String(best);
+      }
+      // Leaderboard entry (object) → lbKey()
+      localStorage.setItem(lbKey(), JSON.stringify({
+        score: totalScore,
+        right: correct,     // number of correct answers
+        ms: totalMs         // total elapsed ms of the run
+      }));
+}
 
     // ------------------------------------------------------------
     // RENDER A QUESTION
