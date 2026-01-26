@@ -176,7 +176,13 @@
       el.className = 'shoot-ship';
       el.style.width  = `${SHIP_W}px`;
       el.style.height = `${SHIP_H}px`;
-      el.innerHTML = `<div class="token" style="font-size:${TOKEN_FONT}px">${tokens[i]}</div>`;
+      
+el.innerHTML = `
+  <div class="token ${mode === 'word' ? 'word' : ''}">
+    ${token}
+  </div>
+`;
+
       stage.appendChild(el);
       const x = Math.round(i * gap);
       const y = rowY;
