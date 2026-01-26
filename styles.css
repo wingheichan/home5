@@ -397,12 +397,17 @@ select {
 /* Player and bullet */
 .shoot-player {
   position: absolute;
-  bottom: 8px;
-  left: 50%;
-  width: 56px; height: 72px;          /* JS will override if you change constants */
+  bottom: 10px;
+
+  width: 48px;
+  height: 64px;
+
+  background: url('img/ship.png') no-repeat center;
+  background-size: contain;
+
   transform: translateX(-50%);
-  background: url('img/ship.png') no-repeat center / contain;
 }
+
 
 .shoot-bullet {
   position: absolute;
