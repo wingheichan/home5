@@ -58,6 +58,7 @@
       else if (k.startsWith('memory:')) group = 'Memory';
       else if (k.startsWith('cloze:'))  group = 'Cloze';
       else if (k.startsWith('catch:')) group = 'Catch';  
+      else if (k.startsWith('shoot:')) group = 'Shoot';
       else if (k.startsWith('sudoku:')) group = 'Sudoku';
       else if (k.startsWith('wordsearch:')) group = 'Word Search';
       else continue; // Ignore unrelated/unknown keys
@@ -224,7 +225,7 @@
     if (!confirm('Clear all leaderboard entries?')) return;
 
     // If you add a new game, add its prefix here to be clearable.
-    ['quiz:', 'memory:', 'cloze:', 'catch:','sudoku:', 'wordsearch:'].forEach(pref => {
+    ['quiz:', 'memory:', 'cloze:', 'catch:','shoot:','sudoku:', 'wordsearch:'].forEach(pref => {
       // Iterate backwards as we remove items to avoid index shifting problems.
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
