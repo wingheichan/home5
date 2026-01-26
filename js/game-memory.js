@@ -5,17 +5,21 @@
   const selCat=$('#memCat'), selSub=$('#memSub'), selMode=$('#memMode'); const grid=$('#memGrid'); const tOut=$('#memTime'); const corrOut=$('#memCorrect'); const sOut=$('#memScore'); const hOut=$('#memHigh'); const timer=new Timer(tOut);
   function fill(sel, items){ sel.innerHTML=''; items.forEach(v=> sel.append(new Option(v,v))); }
   
-function bestKey() {
-  // Keep category + sub + mode, but standardize the prefix
-  return `memory:${selCat.value}:${selSub.value}:${selMode.value}`;
-}
+
+function hsKey() {
+   return `highscore:memory:${selCat.value}:${selSub.value}:${selMode.value}`;
+ }
+ function lbKey() {
+   return `memory:${selCat.value}:${selSub.value}:${selMode.value}`;
+ }
+
 
 function loadHigh() {
-  // Safe parse with numeric fallback
-  const raw = localStorage.getItem(bestKey());
+  const raw = localStorage.getItem(hsKey());
   const v = raw ? JSON.parse(raw) : 0;
   hOut.textContent = String(v);
 }
+  
 fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(DATA[selCat.value]||{})); loadHigh(); } selCat.addEventListener('change', updateSub); selSub.addEventListener('change', loadHigh); selMode.addEventListener('change', loadHigh); updateSub();
 
   let first=null, lock=false, matches=0, moves=0, totalPairs=8, tilesNodes=[];
@@ -124,21 +128,34 @@ fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(
     first = null;
     sOut.textContent = String(scoreNow());
 
-    if (matches === 8) finish();
+    if (matches === totalPairs) finish();
   }, 550);
 }
 
 
+function finish() {
+  timer.stop();
+  const score = scoreNow();
+  sOut.textContent = String(score);
 
+  // Highscore (number)
+  const prev = +(localStorage.getItem(hsKey()) || 0);
+  const best = Math.max(prev, score);
+  localStorage.setItem(hsKey(), String(best));
+  hOut.textContent = String(best);
 
+  // Leaderboard entry (object) — right = matches; also store ms (and moves if you want)
+  const totalMs = timer.elapsedMs();
+  localStorage.setItem(lbKey(), JSON.stringify({
+    score,
+    right: matches,     // show "Correct: <matches>" on the leaderboard
+    ms: totalMs,
+    moves              // optional; not shown in the unified line, but kept
+  }));
 
+  SFX.success();
+}
 
-  function finish(){
-    timer.stop();
-    const score = scoreNow(); sOut.textContent=String(score);
-    const best=Math.max(score, +(localStorage.getItem(bestKey())||0)); localStorage.setItem(bestKey(), String(best)); hOut.textContent=String(best);
-    SFX.success();
-  }
 
   $('#memStart').addEventListener('click', start);
 })();
