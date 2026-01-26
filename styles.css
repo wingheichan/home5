@@ -400,3 +400,62 @@ select {
 }
 
 
+:root {
+  --shoot-stage-width: 95vw;
+  --shoot-stage-max:   560px;  /* cap on desktop */
+  --shoot-stage-height: 420px;
+}
+
+.shoot-stage {
+  position: relative;
+  width:  min(var(--shoot-stage-width), var(--shoot-stage-max));
+  height: var(--shoot-stage-height);
+  margin-inline: auto;
+  background: var(--surface-elev-1, #1113);
+  border: 1px solid var(--border, #555);
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Player and bullet */
+.shoot-player {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  width: 56px; height: 72px;          /* JS will override if you change constants */
+  transform: translateX(-50%);
+  background: url('img/player.png') no-repeat center / contain;
+}
+
+.shoot-bullet {
+  position: absolute;
+  width: 4px; height: 16px;
+  background: #ffec59;
+  border-radius: 2px;
+}
+
+/* Alienships row */
+.shoot-ship {
+  position: absolute;
+  width: 56px; height: 48px;          /* JS can override */
+  background: url('img/ship.png') no-repeat center / contain;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
+.shoot-ship .token {
+  background: rgba(255,255,255,.8);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #222;
+  user-select: none;
+}
+
+.target-token {
+  padding: 2px 6px; border-radius: 8px; margin-right: 4px;
+  background: #c8f7c5; border: 1px solid #6bbf59; color: #1b3a1b; font-weight: 600;
+}
+
+@media (min-width: 700px) { .mobile-only { display: none; } }
+
