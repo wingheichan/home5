@@ -327,28 +327,23 @@ select {
   text-align: left;
 }
 
-
-/* Global size knobs for the Catch stage */
-:root {
-  /* Pick the exact size you like on mobile and keep it everywhere */
-  --catch-stage-width: 420px;   /* e.g., almost full screen width on phones */
-  --catch-stage-max:   560px;  /* and cap it, so it doesn't get huge on desktop */
-  --catch-stage-height: 420px; /* keep your current height or adjust */
-}
-
-
-/* Game field: dimension in root */
+/* ===== Fixed game stage size ===== */
+.shoot-stage,
 .catch-stage {
   position: relative;
-  width:  min(var(--catch-stage-width), var(--catch-stage-max));
-  height: var(--catch-stage-height);
-  margin-inline: auto;                 /* center on wider screens */
-  background: var(--surface-elev-1, #1113);
-  border: 1px solid var(--border, #555);
-  overflow: hidden;
-  border-radius: 8px;
-}
 
+  width: 540px;
+  height: 540px;
+
+  margin-inline: auto;      /* center on desktop */
+  margin-block: 0.5rem;
+
+  background: #0b1020;      /* dark space background */
+  border: 2px solid #445;
+  border-radius: 10px;
+
+  overflow: hidden;
+}
 
 /* Player sprite at bottom center initially */
 .catch-player {
@@ -399,24 +394,6 @@ select {
   .mobile-only { display: none; }
 }
 
-
-:root {
-  --shoot-stage-width: 95vw;
-  --shoot-stage-max:   560px;  /* cap on desktop */
-  --shoot-stage-height: 420px;
-}
-
-.shoot-stage {
-  position: relative;
-  width:  min(var(--shoot-stage-width), var(--shoot-stage-max));
-  height: var(--shoot-stage-height);
-  margin-inline: auto;
-  background: var(--surface-elev-1, #1113);
-  border: 1px solid var(--border, #555);
-  overflow: hidden;
-  border-radius: 8px;
-}
-
 /* Player and bullet */
 .shoot-player {
   position: absolute;
@@ -434,14 +411,24 @@ select {
   border-radius: 2px;
 }
 
-/* Alienships row */
+
+/* ===== Alien ship ===== */
 .shoot-ship {
   position: absolute;
-  width: 56px; height: 48px;          /* JS can override */
-  background: url('img/alien2.png') no-repeat center / contain;
-  display: flex; align-items: center; justify-content: center;
+
+  width: 48px;
+  height: 48px;
+
+  background: url('img/ship.png') no-repeat center;
+  background-size: contain;   /* ✅ keeps aspect ratio */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   pointer-events: none;
 }
+
 
 .shoot-ship .token {
   background: rgba(255,255,255,.8);
