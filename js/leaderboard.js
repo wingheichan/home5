@@ -86,18 +86,20 @@
 
     // -----------------------------
     // Sort entries within each group so the "best" entries appear first.
-    // Current heuristic:
-    //  - If value is a NUMBER (Quiz), sort by number descending.
-    //  - Otherwise keep as-is (could be refined to sort by ms ascending, etc.).
-    // You can customize this per group if you want tighter control.
-    // -----------------------------
+
     Object.keys(data).forEach(g => {
-      data[g].sort((a, b) => {
-        const va = typeof a.value === 'number' ? a.value : 0;
-        const vb = typeof b.value === 'number' ? b.value : 0;
-        return vb - va; // higher first
-      });
+    data[g].sort((a, b) => {
+      const va = (typeof a.value === 'object' && typeof a.value.score === 'number')
+        ? a.value.score
+        : (typeof a.value === 'number' ? a.value : 0);
+  
+      const vb = (typeof b.value === 'object' && typeof b.value.score === 'number')
+        ? b.value.score
+        : (typeof b.value === 'number' ? b.value : 0);
+  
+      return vb - va;   // highest score first
     });
+  });
 
     return data;
   }
