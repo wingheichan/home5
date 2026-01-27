@@ -152,7 +152,8 @@ function finish() {
     score,
     right: matches,     // show "Correct: <matches>" on the leaderboard
     ms: totalMs,
-    moves              // optional; not shown in the unified line, but kept
+    moves,              // optional; not shown in the unified line, but kept
+    date: new Date().toISOString()
   }));
 
   SFX.success();
