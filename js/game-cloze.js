@@ -45,7 +45,9 @@ document.getElementById('clozePreview').addEventListener('click', () => {
   //function scoreNow(){ const secs = Math.floor(totalMs / 1000); return (50*correct) + Math.max(0, 51 - secs); }
 function scoreNow() { return totalScore; }
   
-function end(){
+function finish(){
+  enablePreviewButtons();
+  
   // Stop last question timer
   timer.stop();
   
@@ -86,7 +88,7 @@ function end(){
   
 function render(){
   if (!items.length){ wrap.innerHTML = '<p>No items in this subcategory.</p>'; return; }
-  if (idx >= items.length){ end(); return; }
+  if (idx >= items.length){ finish(); return; }
 
   const it = items[idx];
 
