@@ -180,12 +180,14 @@
       if (typeof v.ms === 'number')    parts.push(`Time: ${fmt(v.ms)}`);
     
       const stat = parts.join(' — ') || '—';
-    
+      const dt = v.date ? new Date(v.date).toLocaleString() : '-';
+      
       // ✅ Proper table row
       return `
         <tr>
           <td>${label}</td>
           <td>${stat}</td>
+          <td>${dt}</td> 
         </tr>
       `;
     }).join('');
@@ -197,6 +199,7 @@
           <tr>
             <td>Category</td>
             <td>Best</td>
+            <td>Date</td>
           </tr>
           ${rows}
          </table>
