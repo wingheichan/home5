@@ -399,6 +399,7 @@
 
   // ---- Finish
   function finish() {
+    enablePreviewButtons();
     if (!running) return;
     running = false;
     cancelAnimationFrame(rafId);
