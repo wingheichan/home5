@@ -202,6 +202,7 @@
         score: totalScore,
         right: correct,     // number of correct answers
         ms: totalMs         // total elapsed ms of the run
+        date: new Date().toISOString()   
       }));
 }
 
