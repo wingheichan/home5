@@ -24,11 +24,71 @@
         "rowStep": 38,          
         "bulletSpeed": 460
       },
-      {
+       {
         "id": "animals-words",
         "mode": "word",
-        "targetWords": ["THE", "COW", "SAYS", "MOO"],
-        "wordBank": ["THE","COW","CAT","SAYS","HEN","MOO","DUCK"],
+        "wordRounds": [
+          {
+            "hint": "Farm animal & sound",
+            "sentence": "The cow says moo.",
+            "targetWords": ["THE", "COW", "SAYS", "MOO"],
+            "wordBank": ["THE", "COW", "SAYS", "MOO", "CAT", "HEN", "DUCK"]
+          },
+          {
+            "hint": "Fast jungle cat",
+            "sentence": "The cheetah runs fast.",
+            "targetWords": ["THE", "CHEETAH", "RUNS", "FAST"],
+            "wordBank": ["THE","CHEETAH","RUNS","FAST","SLOW","LION","ELEPHANT","JUMPS"]
+          },
+          {
+            "hint": "Farm animal & sound",
+            "sentence": "The cow says moo.",
+            "targetWords": ["THE", "COW", "SAYS", "MOO"],
+            "wordBank": ["THE", "COW", "SAYS", "MOO", "CAT", "HEN", "DUCK"]
+          },
+          {
+            "hint": "Fast jungle cat",
+            "sentence": "The cheetah runs fast.",
+            "targetWords": ["THE", "CHEETAH", "RUNS", "FAST"],
+            "wordBank": ["THE","CHEETAH","RUNS","FAST","SLOW","LION","ELEPHANT","JUMPS"]
+          },
+          {
+            "hint": "Farm animal & sound",
+            "sentence": "The cow says moo.",
+            "targetWords": ["THE", "COW", "SAYS", "MOO"],
+            "wordBank": ["THE", "COW", "SAYS", "MOO", "CAT", "HEN", "DUCK"]
+          },
+          {
+            "hint": "Fast jungle cat",
+            "sentence": "The cheetah runs fast.",
+            "targetWords": ["THE", "CHEETAH", "RUNS", "FAST"],
+            "wordBank": ["THE","CHEETAH","RUNS","FAST","SLOW","LION","ELEPHANT","JUMPS"]
+          },
+          {
+            "hint": "Farm animal & sound",
+            "sentence": "The cow says moo.",
+            "targetWords": ["THE", "COW", "SAYS", "MOO"],
+            "wordBank": ["THE", "COW", "SAYS", "MOO", "CAT", "HEN", "DUCK"]
+          },
+          {
+            "hint": "Fast jungle cat",
+            "sentence": "The cheetah runs fast.",
+            "targetWords": ["THE", "CHEETAH", "RUNS", "FAST"],
+            "wordBank": ["THE","CHEETAH","RUNS","FAST","SLOW","LION","ELEPHANT","JUMPS"]
+          },
+          {
+            "hint": "Farm animal & sound",
+            "sentence": "The cow says moo.",
+            "targetWords": ["THE", "COW", "SAYS", "MOO"],
+            "wordBank": ["THE", "COW", "SAYS", "MOO", "CAT", "HEN", "DUCK"]
+          },
+          {
+            "hint": "Fast jungle cat",
+            "sentence": "The cheetah runs fast.",
+            "targetWords": ["THE", "CHEETAH", "RUNS", "FAST"],
+            "wordBank": ["THE","CHEETAH","RUNS","FAST","SLOW","LION","ELEPHANT","JUMPS"]
+          }
+        ],
         "speed": 1.0,
         "rowSize": 8,
         "rowStep": 38,
