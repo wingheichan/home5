@@ -104,7 +104,7 @@
     // START A NEW QUIZ SESSION
     // ------------------------------------------------------------
     function start() {
-
+        disablePreviewButtons();
         totalMs = 0; // reset total accumulated time
 
         // Load selected subcategory question list (array of objects)
