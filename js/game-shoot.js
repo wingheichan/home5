@@ -417,7 +417,7 @@
     localStorage.setItem(lbKey(), JSON.stringify({ score, right: (mode === 'word'
         ? (roundIndex >= (wordRounds?.length || 0) ? wordRounds.length : roundIndex)
         : (roundIndex >= (rounds?.length || 0) ? rounds.length : nextIndex))
-      , ms: totalMs }));
+      , ms: totalMs, date: new Date().toISOString() }));
 
     SFX.success();
   }
