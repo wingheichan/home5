@@ -79,7 +79,8 @@ function finish(){
   localStorage.setItem(lbKey(), JSON.stringify({
     score: totalScore,
     right: correct,   // number of correct fills
-    ms: totalMs
+    ms: totalMs,
+    date: new Date().toISOString()
   }));
   
   }
