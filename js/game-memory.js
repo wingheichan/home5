@@ -42,6 +42,7 @@ fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(
   });
 
   function start(){
+    disablePreviewButtons();
     buildTiles(); first=null; lock=false; matches=0; moves=0; corrOut.textContent='0'; sOut.textContent='0'; timer.reset();
     const mode = selMode.value; SFX.click();
     if (mode==='open'){
