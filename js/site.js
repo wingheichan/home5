@@ -47,3 +47,25 @@
   });
   setSoundIcon();
 })();
+
+window.disablePreviewButtons = function() {
+    const ids = ["quizPreview", "memPreview", "clozePreview", "shootPreview"];
+    ids.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add("disabled-preview");
+        }
+    });
+};
+
+window.enablePreviewButtons = function() {
+    const ids = ["quizPreview", "memPreview", "clozePreview", "shootPreview"];
+    ids.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove("disabled-preview");
+        }
+    });
+};
