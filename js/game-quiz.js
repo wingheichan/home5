@@ -163,7 +163,7 @@
     // FINISH QUIZ (when all 10 questions are done)
     // ------------------------------------------------------------
     function finish() {
-
+        enablePreviewButtons();
         // Stop last question timer
         timer.stop();
 
