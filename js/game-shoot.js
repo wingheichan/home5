@@ -239,6 +239,7 @@
 
   // ---- Start a session
   function start() {
+    disablePreviewButtons();
     const item = pickItem();
 
     bullets = []; ships = [];
