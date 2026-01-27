@@ -13,7 +13,6 @@
   <script defer src="js/game-quiz.js"></script>
   <script defer src="js/game-memory.js"></script>
   <script defer src="js/game-cloze.js"></script>
-  <script defer src="js/catch.js"></script>
   <script defer src="js/game-shoot.js"></script>
 </head>
 <body>
@@ -43,7 +42,6 @@
       <button class="seg-btn" data-target="panel-quiz" aria-selected="false">📝 Quiz</button>
       <button class="seg-btn" data-target="panel-memory" aria-selected="false">🧠 Memory</button>
       <button class="seg-btn" data-target="panel-cloze" aria-selected="false">✍️ Fill in</button>
-      <button class="seg-btn" data-target="panel-catch" aria-selected="false">🎈 Catch </button>
       <button class="seg-btn" data-target="panel-shoot" aria-selected="false">👾 Shoot </button>
     </div>
     
@@ -103,58 +101,6 @@
         <button id="clozeStart" class="btn btn-primary">Start</button>
       </div>
       <div id="clozeWrap"></div>
-    </section>
-
-     <section id="panel-catch" class="top-panel card" role="tabpanel">
-      <h1>Catch balloons</h1>
-      <div class="hud">
-        <span class="pill"><span class="label">Time</span> <strong id="catchTime">00:00</strong></span>
-        <span class="pill"><span class="label">Correct</span> <strong id="catchCorrect">0</strong></span>
-        <span class="pill"><span class="label">Score</span> <strong id="catchScore">0</strong></span>
-        <span class="pill"><span class="label">Highscore</span> <strong id="catchHigh">0</strong></span>
-      </div>
-      <div class="controls">
-        <label>Mode
-          <select id="catchMode">
-            <option value="letter">Letter</option>
-            <option value="letter-rounds">Letter 10 rounds</option>
-            <option value="word">Word</option>
-          </select>
-        </label>
-
-        <label>Category <select id="catchCat"></select></label>
-        <label>Subcategory <select id="catchSub"></select></label>
-        <button id="catchPreview" class="btn">Preview</button>
-        <button id="catchStart" class="btn btn-primary">Start</button>
-      </div>
-
-       <!-- Hint -->
-      <div class="target-row" style="margin:.5rem 0">
-        <span class="label">Hint:</span>
-        <span id="catchHint" class="small"></span>
-        <span id="catchRound" class="small" style="margin-left:8px; opacity:.7"></span>
-      </div>
-
-
-       
-      <!-- Game field (stage) and player sprite -->
-        <div id="catchStage" class="catch-stage" tabindex="0" aria-label="Game area">
-          <div id="catchPlayer" class="catch-player" aria-label="Player" role="img" aria-roledescription="Boy"></div>
-        </div>
-
-      <!-- Optional mobile controls -->
-        <div class="controls-row mobile-only" style="margin-top:8px;">
-          <button id="catchLeft" class="btn" aria-label="Move left">◀</button>
-          <button id="catchRight" class="btn" aria-label="Move right">▶</button>
-        </div>
-
-        <!-- Target progress (shows what you've built and what's next) -->
-        <div class="target-row" id="catchTargetRow" aria-live="polite" style="margin:.5rem 0">
-          <span class="label">Target:</span>
-          <span id="catchTarget" class="target-line"></span>
-        </div>
-
-      <div id="catchWrap"></div>
     </section>
     
     <section id="panel-shoot" class="top-panel card" role="tabpanel">
