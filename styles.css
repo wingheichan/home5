@@ -57,6 +57,8 @@ button.btn-primary:hover { filter: brightness(0.95); }
 .card-tile.revealed, .card-tile.matched { background: color-mix(in oklab, var(--card), var(--accent) 16%); }
 .card-tile.matched { outline:2px solid var(--accent); }
 
+.disabled-preview { opacity: 0.4; pointer-events: none; }
+
 /* Word Search & Sudoku */
 .ws-grid { border-collapse: collapse; }
 .ws-grid td { width:34px; height:34px; text-align:center; border:1px solid var(--border); cursor:pointer; user-select:none; font-weight:600; }
