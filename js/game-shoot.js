@@ -306,8 +306,13 @@
       combo++;
       const pts = 50 + Math.min(50, 10 * (combo - 1));
       score += pts;
-      correct++;
-      cOut.textContent = String(correct);
+      
+      // ✅ HUD "Correct" update happens here for LETTERS only
+      if (mode !== 'word') {
+        correct++;
+        cOut.textContent = String(correct);
+      }
+
       SFX.correct();
     } else {
       combo = 0;
@@ -357,7 +362,13 @@
             // advance progress / round
             nextIndex++;
             renderProgress();
-            if (nextIndex >= targetTokens.length) {
+           if (nextIndex >= targetTokens.length) {
+              // ✅ For word mode: count 1 "correct" per completed sentence
+              if (mode === 'word') {
+                correct++;
+                cOut.textContent = String(correct);
+              }
+            
               nextRoundOrFinish();
               return false;
             } else {
