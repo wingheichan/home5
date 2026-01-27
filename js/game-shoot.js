@@ -54,7 +54,9 @@
   let roundIndex = 0;
   let targetTokens = [];    // current round tokens (letters or words)
   let nextIndex = 0;        // next needed index
-
+  
+  let wordRounds = [];   // for word mode: array of {hint, sentence?, targetWords[], wordBank[]}
+  
   // ---- Fill selects
   function fill(sel, items) {
     sel.innerHTML = '';
@@ -125,8 +127,11 @@
       roundIndex = 0;
       if (!rounds.length) return null;
       targetTokens = (rounds[0].target || '').split('');
-    } else { // word mode
-      targetTokens = (item.targetWords || []).slice();
+    }  else { // word mode
+      wordRounds = (item.wordRounds || []).slice(0, 10);
+      roundIndex = 0;
+      if (!wordRounds.length) return null;
+      targetTokens = (wordRounds[0].targetWords || []).slice();
     }
     return item;
   }
@@ -150,14 +155,18 @@
         tokens.push(pool.splice(i,1)[0]);
       }
     } else { // word mode
-      const bank = (item.wordBank && item.wordBank.length) ? item.wordBank.slice() : targetTokens.slice();
-      // ensure need is included then fill rest with distractors
-      const idx = bank.indexOf(need);
-      if (idx !== -1) bank.splice(idx,1);
-      tokens.push(need);
-      while (tokens.length < rowSize && bank.length) {
-        const i = Math.floor(Math.random() * bank.length);
-        tokens.push(bank.splice(i,1)[0]);
+        const wr = wordRounds[roundIndex] || {};
+        const bank = Array.isArray(wr.wordBank) && wr.wordBank.length
+          ? wr.wordBank.slice()
+          : targetTokens.slice();
+      
+        // ensure need is included then fill rest with distractors
+        const idx = bank.indexOf(need);
+        if (idx !== -1) bank.splice(idx, 1);
+        tokens.push(need);
+        while (tokens.length < rowSize && bank.length) {
+          const i = Math.floor(Math.random() * bank.length);
+          tokens.push(bank.splice(i, 1)[0]);
       }
     }
 
@@ -196,22 +205,36 @@
     }
   }
 
-  // ---- Start round helpers (for letter-rounds)
-  function startRound() {
-    if (mode !== 'letter-rounds') return;
-    const r = rounds[roundIndex];
-    hintEl && (hintEl.textContent = r?.hint || '');
-    roundEl && (roundEl.textContent = `(${roundIndex + 1} / ${rounds.length})`);
-    targetTokens = (r?.target || '').split('');
+    // ---- Start round helpers 
+    function startRound() {
+    if (mode === 'letter-rounds') {
+      const r = rounds[roundIndex];
+      hintEl && (hintEl.textContent = r?.hint || '');
+      roundEl && (roundEl.textContent = `(${roundIndex + 1} / ${rounds.length})`);
+      targetTokens = (r?.target || '').split('');
+    } else if (mode === 'word') {
+      const wr = wordRounds[roundIndex];
+      hintEl && (hintEl.textContent = wr?.hint || '');
+      roundEl && (roundEl.textContent = `(${roundIndex + 1} / ${wordRounds.length})`);
+      targetTokens = (wr?.targetWords || []).slice();
+    } else {
+      return;
+    }
     nextIndex = 0;
-    rowY = 40; // reset line at the top
+    rowY = 40;
     renderProgress();
   }
-  function nextRoundOrFinish() {
-    if (mode !== 'letter-rounds') return finish();
-    roundIndex++;
-    if (roundIndex >= rounds.length) finish();
-    else startRound();
+    
+    function nextRoundOrFinish() {
+    if (mode === 'letter-rounds') {
+      roundIndex++;
+      if (roundIndex >= rounds.length) finish(); else startRound();
+    } else if (mode === 'word') {
+      roundIndex++;
+      if (roundIndex >= wordRounds.length) finish(); else startRound();
+    } else {
+      finish();
+    }
   }
 
   // ---- Start a session
@@ -240,8 +263,9 @@
     $$('.shoot-bullet', stage).forEach(el => el.remove());
 
     // Hint/progress
-    if (mode === 'letter-rounds') startRound(); else { hintEl && (hintEl.textContent = ''); roundEl && (roundEl.textContent = ''); renderProgress(); }
-
+    //if (mode === 'letter-rounds') startRound(); else { hintEl && (hintEl.textContent = ''); roundEl && (roundEl.textContent = ''); renderProgress(); }
+    startRound();
+    
     // Build first line
     buildLineForNeed(item);
 
@@ -334,8 +358,7 @@
             nextIndex++;
             renderProgress();
             if (nextIndex >= targetTokens.length) {
-              if (mode === 'letter-rounds') { nextRoundOrFinish(); }
-              else finish();
+              nextRoundOrFinish();
               return false;
             } else {
               // Build a fresh line for the next needed token
@@ -378,7 +401,10 @@
     hOut.textContent = String(best);
 
     // Leaderboard entry (object) — "right" is letters/words caught correctly
-    localStorage.setItem(lbKey(), JSON.stringify({ score, right: (mode === 'word' ? nextIndex : (roundIndex >= (rounds?.length||0) ? rounds.length : nextIndex)), ms: totalMs }));
+    localStorage.setItem(lbKey(), JSON.stringify({ score, right: (mode === 'word'
+        ? (roundIndex >= (wordRounds?.length || 0) ? wordRounds.length : roundIndex)
+        : (roundIndex >= (rounds?.length || 0) ? rounds.length : nextIndex))
+      , ms: totalMs }));
 
     SFX.success();
   }
@@ -419,11 +445,17 @@
     if (!list.length) { showPreview('Shoot Preview', '<p>No items.</p>'); return; }
     const m = selMode?.value || 'letter-rounds';
     const html = list.filter(it => it.mode === m).map((it, i) => {
-      const seq = (m === 'letter-rounds')
-        ? (it.rounds || []).map(r => r.target).join(', ')
-        : (it.targetWords || []).join(' ');
+    if (m === 'letter-rounds') {
+      const seq = (it.rounds || []).map(r => r.target).join(', ');
       return `<p>${i+1}. ${seq}</p>`;
-    }).join('');
+    } else {
+      const seq = (it.wordRounds || []).map((wr, idx) => {
+        const label = wr.sentence ? wr.sentence : (wr.targetWords || []).join(' ');
+        return `${idx+1}) ${label}`;
+      }).join('<br>');
+      return `<p>${i+1}.<br>${seq}</p>`;
+    }
+  }).join('');
     showPreview(`Shoot Preview — ${selCat.value} / ${selSub.value} (${m})`, html || '<p>No matching items.</p>');
   });
 
