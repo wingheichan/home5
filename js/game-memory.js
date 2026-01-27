@@ -135,6 +135,7 @@ fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(
 
 
 function finish() {
+  enablePreviewButtons();
   timer.stop();
   const score = scoreNow();
   sOut.textContent = String(score);
