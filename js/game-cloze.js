@@ -25,6 +25,7 @@ function loadHigh() {
 fill(selCat, Object.keys(DATA)); function updateSub(){ fill(selSub, Object.keys(DATA[selCat.value]||{})); loadHigh(); } selCat.addEventListener('change', updateSub); selSub.addEventListener('change', loadHigh); updateSub();
   let items=[], idx=0, correct=0;
   function start(){
+    disablePreviewButtons();
     totalMs = 0;
     totalScore = 0;
     items = [ ...(((DATA[selCat.value]||{})[selSub.value])||[]) ].sort(()=>Math.random()-0.5);
